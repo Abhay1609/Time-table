@@ -4,7 +4,7 @@ load_dotenv()
 from pathlib import Path
 from datetime import timedelta
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY=os.getenv("SECRET_KEY")
+SECRET_KEY="django-insecure-tfa3$a54a06+lo843vcifg6hhkw2q^kda485%^to@*46=vf$k$"
 DEBUG = True
 ALLOWED_HOSTS = []
 INSTALLED_APPS = [
