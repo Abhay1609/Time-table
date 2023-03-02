@@ -11,21 +11,19 @@ from django.utils.http import urlsafe_base64_decode,urlsafe_base64_encode
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(style={'input_type':'password'},write_only=True)
-
-   
     class Meta:
         model = User
         fields =['mobile_number','email','full_name','gender','age','password']
         extra_kwargs={
-            'password':{'write_only':True}
-        }
+            'password':{'write_only':True},
 
-    def validate(self, attrs):
-       password = attrs.get('password')
-       password2=attrs.get('password2')
-       if password != password2:
-        raise serializers.ValidationError("Passwords are not matching")
-       return attrs
+        }
+    # def validate(self, attrs):
+    #    password = attrs.get('password')
+    #    password2=attrs.get('password2')
+    #    if password != password2:
+    #     raise serializers.ValidationError("Passwords are not matching")
+    #    return attrs
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
