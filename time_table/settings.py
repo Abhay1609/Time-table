@@ -4,7 +4,7 @@ load_dotenv()
 from pathlib import Path
 from datetime import timedelta
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY="django-insecure-tfa3$a54a06+lo843vcifg6hhkw2q^kda485%^to@*46=vf$k$"
+SECRET_KEY=os.getenv("SECRET_KEY")
 DEBUG = True
 ALLOWED_HOSTS = []
 INSTALLED_APPS = [
@@ -64,9 +64,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'time_table.wsgi.application'
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+      'default': {
+        'ENGINE': os.getenv('ENGINE'),
+        'NAME': os.getenv('NAME'),
+        'USER': os.getenv('USER'),
+        'PASSWORD':os.getenv('PASSWORD_RA'),
+        'HOST': os.getenv('HOST'),
+        'PORT':os.getenv('PORT_'),
     }
 }
 AUTH_PASSWORD_VALIDATORS = [

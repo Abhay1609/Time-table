@@ -4,13 +4,13 @@ from django.contrib.auth.models import AbstractBaseUser,BaseUserManager
 from django.utils import timezone
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.validators import MinValueValidator, MaxValueValidator
-
+from department.models import Department,Subject
 
 
 
 
 class UserManager(BaseUserManager):
-    def create_user(self,email, full_name ,age, gender,mobile_number, password=None):
+    def create_user(self,email,department, subject,full_name ,age, gender,mobile_number, password=None):
         """
         Creates and saves a User with the given email, name ,tc and password.
         """
@@ -22,6 +22,8 @@ class UserManager(BaseUserManager):
         user = self.model(
             mobile_number=mobile_number,
             email=self.normalize_email(email),
+            department=department,
+            subject=subject,
             full_name=full_name,
             gender=gender,
             age=age,
@@ -31,7 +33,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self,email, full_name  ,age, gender,mobile_number,password=None):
+    def create_superuser(self,email, full_name  ,department,subject,age, gender,mobile_number,password=None):
         """
         Creates and saves a superuser with the given email, name , tc and password.
         """
@@ -44,6 +46,8 @@ class UserManager(BaseUserManager):
             password=password,
             email=email,
             full_name=full_name,
+            department=department,
+            subject=subject,
             gender=gender,
             age=age,
             
@@ -56,6 +60,8 @@ class User(AbstractBaseUser):
     full_name=models.CharField(max_length=30)
     email=models.EmailField(unique=True)
     mobile_number=models.CharField(max_length=10,unique=True)
+    department=models.ForeignKey(Department,on_delete=models.CASCADE)
+    subject=models.ManyToManyField(Subject)
     gender=models.CharField(max_length=10,null=True)
     age=models.IntegerField(validators=[MinValueValidator(18),MaxValueValidator(60)])
     isverified=models.BooleanField(default=False)
@@ -69,7 +75,7 @@ class User(AbstractBaseUser):
 
 
     USERNAME_FIELD='mobile_number'
-    REQUIRED_FIELDS= ['email','full_name','age','gender']
+    REQUIRED_FIELDS= ['email','full_name','age','gender','department','subject']
 
     def __str__(self):
         return self.full_name+  ' , ' +self.mobile_number
