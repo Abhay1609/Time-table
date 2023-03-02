@@ -10,7 +10,7 @@ from department.models import Department,Subject
 
 
 class UserManager(BaseUserManager):
-    def create_user(self,email,department, subject,full_name ,age, gender,mobile_number, password=None):
+    def create_user(self,email,department, full_name ,age, gender,mobile_number, password=None):
         """
         Creates and saves a User with the given email, name ,tc and password.
         """
@@ -23,7 +23,6 @@ class UserManager(BaseUserManager):
             mobile_number=mobile_number,
             email=self.normalize_email(email),
             department=department,
-            subject=subject,
             full_name=full_name,
             gender=gender,
             age=age,
@@ -33,7 +32,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self,email, full_name  ,department,subject,age, gender,mobile_number,password=None):
+    def create_superuser(self,email, full_name  ,department,age, gender,mobile_number,password=None):
         """
         Creates and saves a superuser with the given email, name , tc and password.
         """
@@ -47,7 +46,6 @@ class UserManager(BaseUserManager):
             email=email,
             full_name=full_name,
             department=department,
-            subject=subject,
             gender=gender,
             age=age,
             
@@ -75,7 +73,7 @@ class User(AbstractBaseUser):
 
 
     USERNAME_FIELD='mobile_number'
-    REQUIRED_FIELDS= ['email','full_name','age','gender','department','subject']
+    REQUIRED_FIELDS= ['email','full_name','age','gender','department']
 
     def __str__(self):
         return self.full_name+  ' , ' +self.mobile_number
