@@ -129,9 +129,11 @@ class SetNewPasswordSerializer(serializers.Serializer):
         return super().validate(attrs)
 
 class lectureSerializers(serializers.Serializer):
-    year=serializers.IntegerField()
-    branche=serializers.CharField(max_length=100)
+    branche = serializers.CharField(max_length=100)
     section = serializers.IntegerField()
+    year=serializers.IntegerField()
+
+
     day = serializers.CharField(max_length=100)
     time=serializers.CharField(max_length=100)
     faculty=serializers.CharField(max_length=100)

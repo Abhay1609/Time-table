@@ -164,4 +164,22 @@ def lecture_create(request):
             return HttpResponse(json_data,content_type='application/json')
         json_data=JSONRenderer().render(serializer.errors)
         return HttpResponse(json_data, content_type='application/json')
+def lecture_view(request,pk,pki,pkyear):
+    if request.method == 'GET':
+
+
+        stu=lecture.objects.filter(year=pkyear).filter(branche=pk).filter(section=pki)
+        serializer = lectureSerializers(stu,many=True)
+        json_data=JSONRenderer().render(serializer.data)
+        return HttpResponse(json_data,content_type='application/json')
+def teacher_view(request,teacher):
+    if request.method == 'GET':
+
+
+        stu=lecture.objects.filter(faculty=teacher)
+        serializer = lectureSerializers(stu,many=True)
+        json_data=JSONRenderer().render(serializer.data)
+        return HttpResponse(json_data,content_type='application/json')
+
+
 
