@@ -5,13 +5,12 @@ from django.contrib.auth.models import AbstractBaseUser,BaseUserManager
 from django.utils import timezone
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.validators import MinValueValidator, MaxValueValidator
-from department.models import Department,Subject
 
 
 
 
 class UserManager(BaseUserManager):
-    def create_user(self,email,department, full_name ,age, gender,mobile_number, password=None):
+    def create_user(self,email, full_name ,age, gender,mobile_number, password=None):
         """
         Creates and saves a User with the given email, name ,tc and password.
         """
@@ -23,7 +22,6 @@ class UserManager(BaseUserManager):
         user = self.model(
             mobile_number=mobile_number,
             email=self.normalize_email(email),
-            department=department,
             full_name=full_name,
             gender=gender,
             age=age,
@@ -33,7 +31,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self,email, full_name  ,department,age, gender,mobile_number,password=None):
+    def create_superuser(self,email, full_name  ,age, gender,mobile_number,password=None):
         """
         Creates and saves a superuser with the given email, name , tc and password.
         """
@@ -46,7 +44,6 @@ class UserManager(BaseUserManager):
             password=password,
             email=email,
             full_name=full_name,
-            department=department,
             gender=gender,
             age=age,
             
@@ -59,8 +56,6 @@ class User(AbstractBaseUser):
     full_name=models.CharField(max_length=30)
     email=models.EmailField(unique=True)
     mobile_number=models.CharField(max_length=10,unique=True)
-    department=models.ForeignKey(Department,on_delete=models.CASCADE)
-    subject=models.ManyToManyField(Subject)
     gender=models.CharField(max_length=10,null=True)
     age=models.IntegerField(validators=[MinValueValidator(18),MaxValueValidator(60)])
     isverified=models.BooleanField(default=False)
@@ -74,7 +69,7 @@ class User(AbstractBaseUser):
 
 
     USERNAME_FIELD='mobile_number'
-    REQUIRED_FIELDS= ['email','full_name','age','gender','department']
+    REQUIRED_FIELDS= ['email','full_name','age','gender']
 
     def __str__(self):
         return self.full_name+  ' , ' +self.mobile_number
@@ -95,25 +90,15 @@ class User(AbstractBaseUser):
         # Simplest possible answer: All admins are staff
         return self.is_admin
     
-    def cookies(self):
+    def tokens(self):
         refresh=RefreshToken.for_user(self)
         return{
             'refresh': str(refresh),
             'access':str(refresh.access_token)
         }
 
-class lecture(models.Model):
-    year=models.IntegerField()
-    branche=models.CharField(max_length=100)
-    section = models.IntegerField()
-    day = models.CharField(max_length=100)
-    time=models.CharField(max_length=100)
-    faculty=models.CharField(max_length=100)
-    subject = models.CharField(max_length=100)
 
 
-    def __str__(self):
-        return self.branche+','+ self.year + ',' + self.section + ',' + self.day +','+self.time
 
 
 
