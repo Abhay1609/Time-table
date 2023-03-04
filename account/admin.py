@@ -34,6 +34,3 @@ class UserModelAdmin(BaseUserAdmin):
 # Now register the new UserAdmin...
 admin.site.register(User, UserModelAdmin)
 # Register your models here.
-@admin.register(lecture)
-class lectureAdmin(admin.ModelAdmin):
-    list_display = ['year','branche','section','faculty','subject','time']

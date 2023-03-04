@@ -11,3 +11,19 @@ class Subject(models.Model):
     sub_id=models.IntegerField(unique=True)
     def __str__(self):
         return str(self.sub_id)+"."+self.subject
+
+class Lecture(models.Model):
+    year=models.IntegerField()
+    branche=models.CharField(max_length=100)
+    section = models.IntegerField()
+    day = models.CharField(max_length=100)
+    time=models.CharField(max_length=100)
+    faculty=models.CharField(max_length=100)
+    subject = models.CharField(max_length=100)
+
+
+    def __str__(self):
+        return self.branche+','+ self.year + ',' + self.section + ',' + self.day +','+self.time
+
+
+
