@@ -25,7 +25,7 @@ class Lecture(models.Model):
 
 
     def __str__(self):
-        return self.branch+','+ self.year + ',' + self.section + ',' + self.day +','+self.time
+        return self.branch+','+ str(self.year) + ',' + str(self.section) + ',' + self.day +','+self.time
 class Profile(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     department=models.ForeignKey(Department,on_delete=models.CASCADE,null=True)
