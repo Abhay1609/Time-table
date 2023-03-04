@@ -4,6 +4,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from django.contrib import auth 
 from django.contrib.auth import login
+from .models import lecture
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str,force_str,smart_bytes,DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode,urlsafe_base64_encode
@@ -126,3 +127,17 @@ class SetNewPasswordSerializer(serializers.Serializer):
         except Exception as e:
             raise AuthenticationFailed('The reset link is invalid', 401)
         return super().validate(attrs)
+
+class lectureSerializers(serializers.Serializer):
+    branche = serializers.CharField(max_length=100)
+    section = serializers.IntegerField()
+    year=serializers.IntegerField()
+
+
+    day = serializers.CharField(max_length=100)
+    time=serializers.CharField(max_length=100)
+    faculty=serializers.CharField(max_length=100)
+    subject = serializers.CharField(max_length=100)
+
+    def create(self, validated_data):
+        return lecture.objects.create(**validated_data)

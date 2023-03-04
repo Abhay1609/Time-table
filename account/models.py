@@ -1,3 +1,4 @@
+
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import AbstractBaseUser,BaseUserManager
@@ -100,6 +101,23 @@ class User(AbstractBaseUser):
             'refresh': str(refresh),
             'access':str(refresh.access_token)
         }
+
+class lecture(models.Model):
+    year=models.IntegerField()
+    branche=models.CharField(max_length=100)
+    section = models.IntegerField()
+    day = models.CharField(max_length=100)
+    time=models.CharField(max_length=100)
+    faculty=models.CharField(max_length=100)
+    subject = models.CharField(max_length=100)
+
+
+    def __str__(self):
+        return self.branche+','+ self.year + ',' + self.section + ',' + self.day +','+self.time
+
+
+
+
 
 
 # Create your models here.

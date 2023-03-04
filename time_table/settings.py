@@ -45,6 +45,7 @@ SWAGGER_SETTINGS={
         }
     }
 }
+
 AUTH_USER_MODEL='account.User'
 TEMPLATES = [
     {

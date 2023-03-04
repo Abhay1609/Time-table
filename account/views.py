@@ -1,6 +1,9 @@
 from rest_framework.response import Response
 from rest_framework import status, generics ,permissions
 from rest_framework.views import APIView
+from django.views.decorators.csrf import csrf_exempt
+from .serializers import lectureSerializers
+from .models import lecture
 from account.serializers import( 
 RegisterSerializer,
 UserProfileSerializer,
@@ -35,6 +38,10 @@ from django.utils.translation import gettext_lazy
 from django.contrib.auth import login,logout
 from django.contrib import auth 
 import os
+import io
+from rest_framework.renderers import JSONRenderer
+from django.http import HttpResponse,JsonResponse
+from rest_framework.parsers import JSONParser
 class RegisterView(generics.GenericAPIView):
 
     serializer_class = RegisterSerializer
@@ -161,6 +168,38 @@ class SetNewPasswordAPIView(generics.GenericAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response({'sucess':True,'message':'Password reset success'},status=status.HTTP_200_OK)
+
+@csrf_exempt
+def lecture_create(request):
+
+    if request.method == 'POST':
+        json_data=request.body
+        stream=io.BytesIO(json_data)
+        pythondata = JSONParser().parse(stream)
+        serializer=lectureSerializers(data=pythondata)
+        if serializer.is_valid():
+            serializer.save()
+            res={'msg':'Data Created'}
+            json_data=JSONRenderer().render(res)
+            return HttpResponse(json_data,content_type='application/json')
+        json_data=JSONRenderer().render(serializer.errors)
+        return HttpResponse(json_data, content_type='application/json')
+def lecture_view(request,pk,pki,pkyear):
+    if request.method == 'GET':
+
+
+        stu=lecture.objects.filter(year=pkyear).filter(branche=pk).filter(section=pki)
+        serializer = lectureSerializers(stu,many=True)
+        json_data=JSONRenderer().render(serializer.data)
+        return HttpResponse(json_data,content_type='application/json')
+def teacher_view(request,teacher):
+    if request.method == 'GET':
+
+
+        stu=lecture.objects.filter(faculty=teacher)
+        serializer = lectureSerializers(stu,many=True)
+        json_data=JSONRenderer().render(serializer.data)
+        return HttpResponse(json_data,content_type='application/json')
 
 
 
