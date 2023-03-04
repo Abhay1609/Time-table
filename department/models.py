@@ -13,10 +13,16 @@ class Subject(models.Model):
     sub_id=models.IntegerField(unique=True)
     def __str__(self):
         return str(self.sub_id)+"."+self.subject
+class Branch(models.Model):
+    branch=models.CharField(max_length=100)
+    brachcode=models.IntegerField()
+    department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True)
 
+    def __str__(self):
+        return self.branch
 class Lecture(models.Model):
     year=models.IntegerField(validators=[MinValueValidator(1),MaxValueValidator(4)])
-    branch=models.CharField(max_length=100)
+    branch=models.ForeignKey(Branch,on_delete=models.CASCADE)
     section = models.IntegerField(null=True)
     day = models.CharField(max_length=100)
     time=models.CharField(max_length=100)
@@ -25,11 +31,11 @@ class Lecture(models.Model):
 
 
     def __str__(self):
-        return self.branch+','+ self.year + ',' + self.section + ',' + self.day +','+self.time
+        return self.branch+',' + self.day +','+self.time
 class Profile(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     department=models.ForeignKey(Department,on_delete=models.CASCADE,null=True)
-    subject=models.ManyToManyField(Subject)
+
 
     def __str__(self):
         return str(self.user) +"'s Profile"
