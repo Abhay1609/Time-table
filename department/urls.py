@@ -1,14 +1,14 @@
 
 from django.urls import path,include
-from department import views
+from .views import *
 
 
 
 urlpatterns = [
-    path('lecture', views.lecture_create),
-    path('view/<int:pkyear>/<str:pk>/<int:pki>/',
-         views.lecture_view),
-    path('view_teacher/<str:teacher>',
-         views.teacher_view)
+    path('lecture', lecture_create),
+    path('view/<int:pkyear>/<str:pk>/<int:pki>/',lecture_view),
+    path('view_teacher/<str:teacher>',teacher_view),
+     path('view-time-table/<str:class_id>',Time_Table_Data.as_view()),
+     path('view-time-table1/<str:class_id>',TimeTableData)
 
 ]
