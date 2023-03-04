@@ -81,17 +81,37 @@ class VerifyEmail(APIView):
              return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:
              return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+        
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+        }
 class LoginAPIView(generics.GenericAPIView):
-     serializer_class=LoginSerializer
-     def post(self,request):
-         serializer=self.serializer_class(data=request.data)
-         mobile_number=request.data.get('mobile_number','')
-         password=request.data.get('password','')
-         user=auth.authenticate(mobile_number=mobile_number,password=password)
-         user=User.objects.get(mobile_number=mobile_number)
-         user_profile=UserProfileSerializer(user,many=False)
-         serializer.is_valid(raise_exception=True)
-         return Response({'login_credentials':serializer.data , 'profile_data':user_profile.data},status=status.HTTP_200_OK)
+    serializer_class=LoginSerializer
+   
+    def post(self,request):
+        data=request.data
+        serializer=self.serializer_class(data=request.data)
+        mobile_number=request.data.get('mobile_number','')
+        password=request.data.get('password','')
+        user=auth.authenticate(mobile_number=mobile_number,password=password)
+        user=User.objects.get(mobile_number=mobile_number)
+        user_profile=UserProfileSerializer(user,many=False)
+        serializer.is_valid(raise_exception=True)
+        tokens=get_tokens_for_user(user)
+        Response.set_cookie(
+                                    key = settings.SIMPLE_JWT['AUTH_COOKIE'], 
+                                    value = tokens["access"],
+                                    expires = settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
+                                    secure = settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+                                    httponly = settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+                                    samesite = settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
+                                    self=tokens['access']
+                                        )
+
+        return Response({'login_credentials':serializer.data , 'profile_data':user_profile.data},status=status.HTTP_200_OK)
 class LogoutAPIView(generics.GenericAPIView):
     serializer_class=LogoutSerializer
 

@@ -56,7 +56,7 @@ class LoginSerializer(serializers.ModelSerializer):
             'mobile_number':user.mobile_number,
             'full_name':user.full_name,
             'email':user.email,
-            'tokens':user.tokens
+            'tokens':user.cookies
         }
 
 

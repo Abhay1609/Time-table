@@ -93,8 +93,8 @@ class User(AbstractBaseUser):
         "Is the user a member of staff?"
         # Simplest possible answer: All admins are staff
         return self.is_admin
-
-    def tokens(self):
+    
+    def cookies(self):
         refresh=RefreshToken.for_user(self)
         return{
             'refresh': str(refresh),
