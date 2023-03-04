@@ -170,6 +170,7 @@ class SetNewPasswordAPIView(generics.GenericAPIView):
         return Response({'sucess':True,'message':'Password reset success'},status=status.HTTP_200_OK)
 
 @csrf_exempt
+@api_view(['POST'])
 def lecture_create(request):
 
     if request.method == 'POST':
@@ -184,6 +185,7 @@ def lecture_create(request):
             return HttpResponse(json_data,content_type='application/json')
         json_data=JSONRenderer().render(serializer.errors)
         return HttpResponse(json_data, content_type='application/json')
+@api_view(['GET'])
 def lecture_view(request,pk,pki,pkyear):
     if request.method == 'GET':
 
@@ -192,6 +194,7 @@ def lecture_view(request,pk,pki,pkyear):
         serializer = lectureSerializers(stu,many=True)
         json_data=JSONRenderer().render(serializer.data)
         return HttpResponse(json_data,content_type='application/json')
+@api_view(['GET'])
 def teacher_view(request,teacher):
     if request.method == 'GET':
 
