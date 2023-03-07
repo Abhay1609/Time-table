@@ -34,22 +34,57 @@ def lecture_create(request):
             return HttpResponse(json_data,content_type='application/json')
         json_data=JSONRenderer().render(serializer.errors)
         return HttpResponse(json_data, content_type='application/json')
-def lecture_view(request,pk,pki,pkyear):
-    if request.method == 'GET':
-
-
-        stu=Lecture.objects.filter(year=pkyear).filter(branche=pk).filter(section=pki)
-        serializer = LectureSerializers(stu,many=True)
-        json_data=JSONRenderer().render(serializer.data)
-        return HttpResponse(json_data,content_type='application/json')
+# def lecture_view(request,pk,pki,pkyear):
+#     if request.method == 'GET':
+#
+#
+#         stu=Lecture.objects.filter(year=pkyear).filter(branche=pk).filter(section=pki)
+#         serializer = LectureSerializers(stu,many=True)
+#         json_data=JSONRenderer().render(serializer.data)
+#         return HttpResponse(json_data,content_type='application/json')
+@api_view(['GET'])
 def teacher_view(request,teacher):
     if request.method == 'GET':
 
 
         stu=Lecture.objects.filter(faculty=teacher)
-        serializer = LectureSerializers(stu,many=True)
+        Monday = []
+        Tuesday = []
+        Wednesday = []
+        Thursday = []
+        Friday = []
+        for day in stu:
+            if day.day == "1":
+                Monday.append(day)
+            elif day.day == "2":
+                Tuesday.append(day)
+            elif day.day == "3":
+                Wednesday.append(day)
+            elif day.day == "4":
+                Thursday.append(day)
+            elif day.day == "5":
+                Friday.append(day)
+        serializer1=TimeTableSerializer(Monday,many=True)
+        serializer2=TimeTableSerializer(Tuesday,many=True)
+        serializer3=TimeTableSerializer(Wednesday,many=True)
+        serializer4=TimeTableSerializer(Thursday,many=True)
+        serializer5=TimeTableSerializer(Friday,many=True)
+        serializer=TimeTableSerializer(stu,many=True)
+        return Response({"Monday":serializer1.data,"Tuesday":serializer2.data,"Wednesday":serializer3.data,"Thursday":serializer4.data,"Friday":serializer5.data},status=status.HTTP_200_OK)
+
+        # serializer = LectureSerializers(stu,many=True)
+        # json_data=JSONRenderer().render(serializer.data)
+
+        # return HttpResponse(json_data,content_type='application/json')
+@api_view(['GET'])
+def Time_Table_day(request,day,class_id):
+    if request.method == 'GET':
+        stu = Lecture.objects.filter(cid=class_id).filter(day=day)
+        serializer = TimeTableSerializer(stu,many=True)
         json_data=JSONRenderer().render(serializer.data)
+
         return HttpResponse(json_data,content_type='application/json')
+
 class Time_Table_Data(ListCreateAPIView):
     serializer_class=TimeTableSerializer
     queryset=Lecture.objects.filter(day=1)
