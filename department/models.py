@@ -1,6 +1,7 @@
 from django.db import models
 from account.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.contrib.postgres.fields import ArrayField
 
 class Department(models.Model):
     dept=models.CharField(max_length=50,unique=True)
@@ -52,6 +53,7 @@ class Lecture(models.Model):
     type=models.CharField(choices=lecture_type,null=True,blank=True,max_length=7)
     class Meta:
         ordering=["day","period"]
+        unique_together = (("faculty","day","period"),("cid","period","day"))
     def __str__(self):
         return str(self.cid)+","+str(self.period)
 class Profile(models.Model):
@@ -62,3 +64,8 @@ class Profile(models.Model):
 
     def __str__(self):
         return str(self.user) +"'s Profile"
+class Time_Table_Creator(models.Model):
+    teacher_id=models.CharField(max_length=5)
+    subject_id=models.CharField(max_length=5)
+    class_id=ArrayField(models.CharField(max_length=5))
+    no_of_lectures=models.IntegerField(validators=[MinValueValidator(0),MaxValueValidator(9)])
