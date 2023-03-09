@@ -18,7 +18,7 @@ urlpatterns = [
     path('view-time-table1/<str:class_id>',TimeTableData),
     path('view_day/<int:day>/<str:class_id>',Time_Table_day),
     path('view_period/',period_view),
-    path('create_table/',CreateTable.as_view()),
+    path('create_table/',CreateTable),
 
 ]
 
