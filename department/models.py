@@ -65,7 +65,13 @@ class Profile(models.Model):
     def __str__(self):
         return str(self.user) +"'s Profile"
 class Time_Table_Creator(models.Model):
+    lecture_type=[
+        ('THEORY','THEORY'),
+        ('LAB','LAB'),
+        ('OTHERS','OTHERS')
+    ]
     teacher_id=models.CharField(max_length=5)
     subject_id=models.CharField(max_length=5)
     class_id=ArrayField(models.CharField(max_length=5))
     no_of_lectures=models.IntegerField(validators=[MinValueValidator(0),MaxValueValidator(9)])
+    type=models.CharField(choices=lecture_type,null=True,blank=True,max_length=7)

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import *
+from django.contrib.postgres.fields import ArrayField
 class LectureSerializers(serializers.Serializer):
     day = serializers.CharField(max_length=100)
     time=serializers.CharField(max_length=100)
@@ -24,6 +25,7 @@ class TimeTableCreateSerializer(serializers.Serializer):
     subject_id=serializers.CharField(max_length=5)
     class_id=serializers.ListField(child=serializers.CharField(max_length=5))
     no_of_lectures=serializers.IntegerField()
+    type=serializers.CharField(max_length=7)
 class LectureCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model=Lecture

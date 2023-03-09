@@ -34,14 +34,6 @@ def lecture_create(request):
             return HttpResponse(json_data,content_type='application/json')
         json_data=JSONRenderer().render(serializer.errors)
         return HttpResponse(json_data, content_type='application/json')
-# def lecture_view(request,pk,pki,pkyear):
-#     if request.method == 'GET':
-#
-#
-#         stu=Lecture.objects.filter(year=pkyear).filter(branche=pk).filter(section=pki)
-#         serializer = LectureSerializers(stu,many=True)
-#         json_data=JSONRenderer().render(serializer.data)
-#         return HttpResponse(json_data,content_type='application/json')
 @api_view(['GET'])
 def teacher_view(request,teacher):
     if request.method == 'GET':
@@ -53,6 +45,7 @@ def teacher_view(request,teacher):
         Wednesday = []
         Thursday = []
         Friday = []
+        Saturday=[]
         for day in stu:
             if day.day == "1":
                 Monday.append(day)
@@ -64,18 +57,15 @@ def teacher_view(request,teacher):
                 Thursday.append(day)
             elif day.day == "5":
                 Friday.append(day)
+            elif day.day == "6":
+                Saturday.append(day)
         serializer1=TimeTableSerializer(Monday,many=True)
         serializer2=TimeTableSerializer(Tuesday,many=True)
         serializer3=TimeTableSerializer(Wednesday,many=True)
         serializer4=TimeTableSerializer(Thursday,many=True)
         serializer5=TimeTableSerializer(Friday,many=True)
-        serializer=TimeTableSerializer(stu,many=True)
-        return Response({"Monday":serializer1.data,"Tuesday":serializer2.data,"Wednesday":serializer3.data,"Thursday":serializer4.data,"Friday":serializer5.data},status=status.HTTP_200_OK)
-
-        # serializer = LectureSerializers(stu,many=True)
-        # json_data=JSONRenderer().render(serializer.data)
-
-        # return HttpResponse(json_data,content_type='application/json')
+        serializer6=TimeTableSerializer(Saturday,many=True)
+        return Response({"Monday":serializer1.data,"Tuesday":serializer2.data,"Wednesday":serializer3.data,"Thursday":serializer4.data,"Friday":serializer5.data,"Saturday":serializer6.data},status=status.HTTP_200_OK)
 @api_view(['GET'])
 def Time_Table_day(request,day,class_id):
     if request.method == 'GET':
@@ -99,6 +89,7 @@ def TimeTableData(request,class_id):
     Wednesday=[]
     Thursday=[]
     Friday=[]
+    Saturday=[]
     for day in data:
         if day.day=="1":
             Monday.append(day)
@@ -110,13 +101,15 @@ def TimeTableData(request,class_id):
             Thursday.append(day)
         elif day.day=="5":
             Friday.append(day)
+        elif day.day == "6":
+            Saturday.append(day)
     serializer1=TimeTableSerializer(Monday,many=True)
     serializer2=TimeTableSerializer(Tuesday,many=True)
     serializer3=TimeTableSerializer(Wednesday,many=True)
     serializer4=TimeTableSerializer(Thursday,many=True)
     serializer5=TimeTableSerializer(Friday,many=True)
-    serializer=TimeTableSerializer(data,many=True)
-    return Response({"Monday":serializer1.data,"Tuesday":serializer2.data,"Wednesday":serializer3.data,"Thursday":serializer4.data,"Friday":serializer5.data},status=status.HTTP_200_OK)
+    serializer6=TimeTableSerializer(Saturday,many=True)
+    return Response({"Monday":serializer1.data,"Tuesday":serializer2.data,"Wednesday":serializer3.data,"Thursday":serializer4.data,"Friday":serializer5.data,"Saturday":serializer6.data},status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def period_view(request):
@@ -135,25 +128,59 @@ class CreateTable(ListCreateAPIView):
         day=1
         period=1
         limit=serializer.validated_data["no_of_lectures"]
+        type=serializer.validated_data["type"]
         faculty=serializer.validated_data["teacher_id"]
-        for section in serializer.validated_data["class_id"]:
-            for i in range(1,limit+1):
-                lecture={
+        if type=="THEORY":
+            for section in serializer.validated_data["class_id"]:
+                for i in range(1,limit+1):
+                    lecture={
                     "period":period,
                     "cid":section,
                     "day":day,
                     "faculty":faculty,
                     "subject":subject,
-                    "type":"THEORY",
+                    "type":type,
                 }
-                data=LectureCreateSerializer(data=lecture)
-                if data.is_valid():
-                    data.save()
-                while data.is_valid()==False:
-                    period+=1
+                    data=LectureCreateSerializer(data=lecture)
+                    if data.is_valid():
+                        data.save()
+                    while data.is_valid()==False:
+                        period+=1
+                        if period==3 or period==7:
+                            period+=1
+                        if period>9:
+                            day+=1
+                            period=1
+                        lecture={
+                    "period":period,
+                    "cid":section,
+                    "day":day,
+                    "faculty":faculty,
+                    "subject":subject,
+                    "type":type,
+                        }
+                        data=LectureCreateSerializer(data=lecture)
+                        if data.is_valid():
+                            data.save()
+                    day=day+1
+                    period=period+1
+                    if day>5:
+                        day=1
                     if period==3 or period==7:
                         period+=1
                     if period>9:
+                        period=1
+            return Response({"Message":"Testing"})
+        elif type=="LAB":
+            for section in serializer.validated_data["class_id"]:
+                for i in range(1,limit+1):
+                    if day>5:
+                        day=1
+                    if period==2 or period==6:
+                        period+=1
+                    if period==3 or period==7:
+                        period+=1
+                    if period>8:
                         day+=1
                         period=1
                     lecture={
@@ -162,24 +189,64 @@ class CreateTable(ListCreateAPIView):
                     "day":day,
                     "faculty":faculty,
                     "subject":subject,
-                    "type":"THEORY",
+                    "type":type,
                     }
+                    lecture1={
+                    "period":period+1,
+                    "cid":section,
+                    "day":day,
+                    "faculty":faculty,
+                    "subject":subject,
+                    "type":type,
+                    }
+
                     data=LectureCreateSerializer(data=lecture)
-                    if data.is_valid():
+                    data1=LectureCreateSerializer(data=lecture1)
+                    if data.is_valid() and data1.is_valid():
                         data.save()
-                    else:
-                        print(limit)
-                        print(data.is_valid())
-             
-                day=day+1
-                period=period+1
-                if day>5:
-                    day=1
-                if period==3 or period==7:
-                    period+=1
-                if period>9:
-                    period=1
-        return Response({"Message":"Testing"})
+                        data1.save()
+                    while data.is_valid()==False or data1.is_valid()==False:
+                        period+=1
+                        if period==2 or period==6:
+                            period+=1
+                        if period==3 or period==7:
+                            period+=1
+                        if period>8:
+                            day+=1
+                            period=1
+                        lecture={
+                    "period":period,
+                    "cid":section,
+                    "day":day,
+                    "faculty":faculty,
+                    "subject":subject,
+                    "type":type,
+                        }
+                        lecture1={
+                    "period":period+1,
+                    "cid":section,
+                    "day":day,
+                    "faculty":faculty,
+                    "subject":subject,
+                    "type":type,
+                    }
+                        data=LectureCreateSerializer(data=lecture)
+                        data1=LectureCreateSerializer(data=lecture1)
+                        if data.is_valid() and data1.is_valid():
+                            data.save()
+                            data1.save()
+                    day=day+1
+                    period=period+1
+                    if day>5:
+                        day=1
+                    if period==2 or period==6:
+                        period+=1
+                    if period==3 or period==7:
+                        period+=1
+                    if period>8:
+                        period=1
+                        day+=1
+            return Response({"Message":"Testing"})
 
 
 
