@@ -3,6 +3,7 @@ from .models import *
 admin.site.register(Department)
 admin.site.register(Subject)
 admin.site.register(Branch)
+admin.site.register(Time_Table_Creator)
 
 
 # Register your models here.
@@ -12,4 +13,4 @@ class lectureAdmin(admin.ModelAdmin):
 
 @admin.register(Class)
 class lectureAdmin(admin.ModelAdmin):
-    list_display = ['id','branch','section','class_id']
+    list_display = ['id','branch','section','class_id','lunch']

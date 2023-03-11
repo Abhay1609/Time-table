@@ -24,21 +24,22 @@ class Branch(models.Model):
 class PersonManager(models.Manager):
     def get_by_natural_key(self, branch, section):
         return self.get(branch=branch, section=section)
-class Class(models.Model):
-    objects=PersonManager
-    branch=models.ForeignKey(Branch,on_delete=models.CASCADE)
-    section=models.IntegerField(validators=[MinValueValidator(1),MaxValueValidator(3)])
-    class_id=models.CharField(max_length=5,unique=True)
-    def natural_key(self):
-        return str(self.branch)+str(self.section)
-
-    def __str__(self):
-        return str(self.branch)+"-"+str(self.section)
 class Period(models.Model):
     period_no=models.IntegerField(validators=[MinValueValidator(1),MaxValueValidator(9)])
     timeslot=models.CharField(max_length=11)
     def __str__(self):
         return str(self.period_no)+'.'+self.timeslot
+class Class(models.Model):
+    objects=PersonManager
+    branch=models.ForeignKey(Branch,on_delete=models.CASCADE)
+    section=models.CharField(max_length=15)
+    class_id=models.CharField(max_length=5,unique=True)
+    lunch=models.ForeignKey(Period,on_delete=models.CASCADE)
+    def natural_key(self):
+        return str(self.section)
+
+    def __str__(self):
+        return str(self.branch)+"-"+str(self.section)
 class Lecture(models.Model):
     lecture_type=[
         ('THEORY','THEORY'),
